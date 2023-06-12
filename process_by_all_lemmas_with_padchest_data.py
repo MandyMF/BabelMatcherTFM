@@ -18,7 +18,7 @@ model, ruler = testBabelTermsMatcher.create_NER_model(data_from_babelnet, config
 
 results = []
 
-for i in range(0, 8):
+for i in range(len(testBabelTermsMatcher.data)):
   
   doc = testBabelTermsMatcher.apply_model(model, testBabelTermsMatcher.data[i])
   results.append([{"entity": str(ent.text) , "tag": str(ent.label_)} for ent in doc.ents])

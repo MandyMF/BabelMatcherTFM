@@ -14,7 +14,7 @@ testBabelTermsMatcher.load_data_from_padchest(config_data['data_to_process_path'
 
 #data_from_babelnet = testBabelTermsMatcher.get_data_from_list_of_lemmas_default_all ( ['medicine', 'surgery'], config_data['lang'], config_data['search_levels'])
 
-data_from_babelnet = testBabelTermsMatcher.get_data_from_list_of_lemmas_default_first ( config_data['lemma_list'], config_data['lang'], config_data['search_levels'])
+data_from_babelnet = testBabelTermsMatcher.get_data_from_list_of_ids ( config_data['id_list'], config_data['lang'], config_data['search_levels'])
 
 model, ruler = testBabelTermsMatcher.create_NER_model(data_from_babelnet, config_data['lang'])
 

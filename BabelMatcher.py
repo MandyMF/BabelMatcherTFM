@@ -1,7 +1,3 @@
-#!pip install -U pip setuptools wheel
-#!pip install -U spacy
-#!python -m spacy download en_core_web_sm
-
 import spacy
 from spacy.tokens import Span
 from spacy.language import Language
@@ -40,13 +36,8 @@ class BabelTermsMatcher:
     
     def load_data_from_padchest(self, data_path):
       raw_data = pd.read_csv(data_path, index_col=0)
-      #print("--------------------------")
-      #print(list(raw_data['Report']))
-      #print("--------------------------")
-      #self.data = [item for item in raw_data['Report']]
       self.data = list(raw_data['Report'])
-      
-    #---------------------------------- save NER model --------------------------------------
+
     def save_model(self, model, path):
       model.to_disk(path)
       return
@@ -58,9 +49,7 @@ class BabelTermsMatcher:
       else:
         print("No model to save")
         return 0
-    #----------------------------------------------------------------------------------------
 
-    #---------------------------------- save NER model --------------------------------------
     def load_model(self, path):
       model = spacy.load(path)
       return model
@@ -68,9 +57,7 @@ class BabelTermsMatcher:
     def load_to_current_model(self, path):
       self.currentNER_Model = spacy.load(path)
       return self.currentNER_Model
-    #----------------------------------------------------------------------------------------
 
-    #---------------------------------- stage 1 ----------------------------------------
     def get_hypernom(self, id, lang):
         return_data= []
         
@@ -99,7 +86,7 @@ class BabelTermsMatcher:
           language = result.get('language')
           # retrieving BabelPointer data
           pointer = result['pointer']
-          relation = pointer.get('name')
+          #relation = pointer.get('name')
           group = pointer.get('relationGroup')
 
           if ('HYPONYM' == group and language == lang):
@@ -133,10 +120,6 @@ class BabelTermsMatcher:
         self.latestOperation = "get_hypernom_with_levels"
         self.latestOperationResult = return_data
         return return_data
-      
-    #----------------------------------------------------------------------------------------
-    
-    #---------------------------------- stage 2 ---------------------------------------------
 
     def get_data_from_id_with_tag (self, id, lang, tag):
         ret_dic = {}
@@ -170,7 +153,6 @@ class BabelTermsMatcher:
         return ret_dic
 
     def create_dic_from_instance(self, data, tag, ret_dic):
-        #print(data)
         for val in data['senses']:
           if(tag in ret_dic):
             ret_dic[tag] = ret_dic[tag].union( set([(val['properties']['lemma']['lemma']).lower().replace('_', ' ')]) )
@@ -183,14 +165,10 @@ class BabelTermsMatcher:
         self.latestOperationResult = ret_dic
         return ret_dic
 
-    #----------------------------------------------------------------------------------------
-    
-    #---------------------------------- stage 3 ---------------------------------------------
     def get_data_from_id_and_hyper_by_level(self, id, lang, tag, levels):
         hyper_by_lvl_l = self.get_hypernom_with_levels(id, lang, levels)
         ret_dic = {}
-        ret_dic[tag] = [] 
-        #print(hyper_by_lvl_l)
+        ret_dic[tag] = []
 
         for id in hyper_by_lvl_l:
           ret_data_dic = self.get_data_from_id_with_tag(id, lang, tag)
@@ -235,7 +213,7 @@ class BabelTermsMatcher:
     def get_data_from_resp(self, data):
         ret_list=[]
         sourceSense_l = []
-        #print(data)
+
         for val in data['senses']:
           # POTENTIAL_NEAR_SYNONYM_OR_WORSE
           if(val['properties']['lemma']['type'] != 'HIGH_QUALITY'):
@@ -247,11 +225,7 @@ class BabelTermsMatcher:
               'glosses': data['glosses']
           }
           sourceSense_l.append(val['properties']['synsetID']['id'])
-          #print(sourceSense_l)
-          #print(val)
-          #print();
           ret_list.append(item)
-        #print(ret_list)
 
         self.latestOperation = "get_data_from_resp"
         self.latestOperationResult = ret_list
@@ -284,7 +258,6 @@ class BabelTermsMatcher:
 
         data = json.loads(response.text)
         ret_resp.extend(data)
-        #print(ret_resp)
    
         for item in ret_resp:
           resp_data = self.get_only_data_from_id(item['id'], lang)
@@ -292,7 +265,6 @@ class BabelTermsMatcher:
               'id': item['id'],
               'data': resp_data
           })
-          #print(item['id'], resp_data_list)
         
         self.latestOperation = "get_data_from_lemma"
         self.latestOperationResult = resp_data_list
@@ -324,9 +296,6 @@ class BabelTermsMatcher:
         self.latestOperation = "get_glosses_and_id_from_lemma"
         self.latestOperationResult = [lemma, ret_data]
         return [lemma, ret_data]
-
-
-    #---------------------------------- stage 7 ---------------------------------------------
 
     def create_pattern (self, data):
         pattern = []
@@ -454,7 +423,6 @@ class BabelTermsMatcher:
     def apply_model (self, model_ner, text):
         doc = model_ner(text) 
         return doc
-    # ---------------------------------------  NEEDS TESTING ------------------------------------------------------
 
     def get_data_from_list_of_lemmas_default_first (self, l_terms, lang, levels):
         l_id_result = []
@@ -498,11 +466,9 @@ class BabelTermsMatcher:
 
         for i in range(len(l_ids)):
           d_lemma_childs = self.get_data_from_id_and_hyper_by_level(l_ids[i], lang, l_tags[i], levels)
-          #pattern_return = {key: pattern_return[key] + d_lemma_childs[key] for key in set(d_lemma_childs) & set(pattern_return)}
 
           pattern_return = { key:pattern_return.get(key,[])+d_lemma_childs.get(key,[]) for key in set(list(pattern_return.keys())+list(d_lemma_childs.keys())) }
         
-        #return pattern_return
         return self.create_pattern(pattern_return)
 
         
@@ -531,5 +497,3 @@ class BabelTermsMatcher:
         thread = Thread(target= task, args=args)
         thread.start()
         return thread
-
-    #----------------------------------------------------------------------------------------

@@ -22,7 +22,7 @@ testBabelTermsMatcher.load_to_current_model(config_data['load_model_path'])
 
 results = []
 
-for i in range(0, 8):
+for i in range(len(testBabelTermsMatcher.data)):
   
   doc = testBabelTermsMatcher.apply_model(testBabelTermsMatcher.currentNER_Model, testBabelTermsMatcher.data[i])
   results.append([{"entity": str(ent.text) , "tag": str(ent.label_)} for ent in doc.ents])

@@ -6,7 +6,8 @@ babel_key : "babel_key"
 lang: "lang"
 lemma_list: [] # lemma_list
 id_list: [] # id_list
-tag_id_list: [] # tag_id_list
+# If tag_list is going to be used it has to have the same legth as id_list
+tag_list: [] # tag_list
 search_levels: 2 # search_levels
 result_file_path: "./result.json" 
 save_model_path: "./model_saved"
