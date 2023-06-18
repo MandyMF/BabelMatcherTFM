@@ -3,7 +3,7 @@
 test_data_path: "test_data_path"
 data_to_process_path: "data_to_process_path"
 babel_key : "babel_key"
-lang: "lang"
+lang: "lang" # Example: EN, ES
 lemma_list: [] # lemma_list
 id_list: [] # id_list
 # If tag_list is going to be used it has to have the same legth as id_list
