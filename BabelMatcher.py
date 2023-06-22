@@ -340,7 +340,7 @@ class BabelTermsMatcher:
                {
                    "TEXT": 
                    {
-                       "FUZZY1": 
+                       "FUZZY2": 
                       {
                         "IN": data[key],
                         "NOT_IN": [' '] + list(punctuation)
