@@ -12,6 +12,8 @@ from string import punctuation
 import requests
 import json
 
+from stop_words import get_stop_words
+
 
 class BabelTermsMatcher:
 
@@ -323,7 +325,7 @@ class BabelTermsMatcher:
       self.latestOperationResult = [lemma, ret_data]
       return [lemma, ret_data]
 
-    def create_pattern (self, data):
+    def create_pattern (self, data, lang, distance=1):
       '''
       This function creates the pattern that is going to be use by the spacy model.
       This implementation uses FUZZY with one letter permutation, to match the data
@@ -334,16 +336,32 @@ class BabelTermsMatcher:
       '''
       pattern = []
       for key in data:
+        
+        # this code is because from babel some times comes compound frases, this split them
+        # but it didn't work
+        
+        data_key_split = []
+        for i in data[key]:
+          data_key_split += i.split(' ')
+        
+        data_key_split = list(set(data_key_split))
+        
+        stop_words = []
+        try: 
+          stop_words = get_stop_words(lang.lower())
+        except:
+          stop_words = []
+        
         item = {
             "label": key,
             "pattern": [
                {
                    "TEXT": 
                    {
-                       "FUZZY2": 
+                        "FUZZY"+str(distance): 
                       {
-                        "IN": data[key],
-                        "NOT_IN": [' '] + list(punctuation)
+                        "IN": data_key_split,
+                        "NOT_IN": list(punctuation) + stop_words
                       }
                    }
                } 
@@ -383,6 +401,8 @@ class BabelTermsMatcher:
       pattern.append(date_pattern)
       pattern.append(date_pattern2)
       pattern.append(email_pattern)
+      
+      print(pattern)
       
       return pattern
 
@@ -513,7 +533,7 @@ class BabelTermsMatcher:
         d_lemma_childs = self.get_data_from_id_and_hypo_by_level(l_ids[i], lang, l_tags[i], levels)
         pattern_return = { key:pattern_return.get(key,[])+d_lemma_childs.get(key,[]) for key in set(list(pattern_return.keys())+list(d_lemma_childs.keys())) }
       
-      return self.create_pattern(pattern_return)
+      return self.create_pattern(pattern_return, lang)
 
         
 
@@ -536,7 +556,7 @@ class BabelTermsMatcher:
           continue
         d_lemma_childs = self.get_data_from_id_and_hypo_by_level(id, lang, tag[id], levels)
         pattern_return = { key:pattern_return.get(key,[])+d_lemma_childs.get(key,[]) for key in set(list(pattern_return.keys())+list(d_lemma_childs.keys())) }
-      return self.create_pattern(pattern_return)
+      return self.create_pattern(pattern_return, lang)
 
     def execute_async (self, task, args):
       '''

@@ -28,7 +28,7 @@ def load_data(data_path):
 
 def write_result_to_pc (data, result_path):
     try:
-        jsonString = json.dumps(data)
+        jsonString = json.dumps(data, indent=4, sort_keys=True)
         text_file = open(result_path, "w")
         n = text_file.write(jsonString)
         text_file.close()
