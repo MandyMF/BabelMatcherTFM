@@ -8,6 +8,8 @@ testBabelTermsMatcher.load_data_from_padchest(config_data['data_to_process_path'
 
 data_from_babelnet = testBabelTermsMatcher.get_data_from_list_of_lemmas_default_first ( config_data['lemma_list'], config_data['lang'], config_data['search_levels'])
 
+write_result_to_pc(data_from_babelnet, config_data['save_pattern_path'])
+
 model, ruler = testBabelTermsMatcher.create_NER_model(data_from_babelnet, config_data['lang'])
 
 results = []

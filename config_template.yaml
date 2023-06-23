@@ -12,3 +12,4 @@ search_levels: 2 # search_levels
 result_file_path: "./result.json" 
 save_model_path: "./model_saved"
 load_model_path: "./model_saved"
+save_pattern_path: "./pattern.json"
