@@ -1,5 +1,8 @@
 data
 config.yaml
+configbase.yaml
 __pycache__
 model_saved
 result.json
+main.py
+pattern.json

@@ -22,6 +22,29 @@ def get_data_from_config_file(config_path = "./config.yaml"):
     with open(config_path) as f:
         data = yaml.load(f, Loader=SafeLoader)       
         return data
+
+def config_exist_or_init(config_path = "./config.yaml", template_path= "./config_template.yaml"):
+    open(config_path, 'a+').close()
+    with open(config_path, 'r+') as f:
+        data = yaml.load(f, Loader=SafeLoader)
+        
+        if(data and len(data.keys()) > 0):
+            return True
+        else:
+            if(not data):
+                data = {}
+            with open(template_path) as f2:
+                data2 = yaml.load(f2, Loader=SafeLoader)
+                for key in data2.keys():
+                    data[key] = ''
+                
+                yaml.dump(data, f)
+
+def set_value_in_config(key, value, config_path= "./config.yaml"):
+    with open(config_path, 'r+') as f:
+        doc = yaml.load(f, Loader=SafeLoader)
+        doc[key] = value
+        yaml.dump(doc, f)
    
 def load_data(data_path):
         return pd.read_csv(data_path, index_col=0) 
