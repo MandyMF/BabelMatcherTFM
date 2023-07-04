@@ -292,8 +292,6 @@ class BabelTermsMatcher:
       ret_resp.extend(data)
   
       for item in ret_resp:
-        if(item['pos'] != 'NOUN'):
-          continue
         resp_data = self.get_only_data_from_id(item['id'], lang)
         resp_data_list.append({
             'id': item['id'],
