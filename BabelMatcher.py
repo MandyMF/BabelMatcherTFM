@@ -186,7 +186,7 @@ class BabelTermsMatcher:
       '''
       for val in data['senses']:
         if(tag in ret_dic):
-          ret_dic[tag] = ret_dic[tag].union( set([(val['properties']['lemma']['lemma']).lower().replace('_', ' ')]) )
+          ret_dic[tag] = ret_dic[tag].union( set([(val['properties']['lemma']['lemma']).lower()]))
         else:
           ret_dic[tag] = set([(val['properties']['lemma']['lemma']).lower()])
       ret_dic[tag] = list(ret_dic[tag]) 
@@ -292,6 +292,8 @@ class BabelTermsMatcher:
       ret_resp.extend(data)
   
       for item in ret_resp:
+        if(item['pos'] != 'NOUN'):
+          continue
         resp_data = self.get_only_data_from_id(item['id'], lang)
         resp_data_list.append({
             'id': item['id'],
@@ -335,22 +337,24 @@ class BabelTermsMatcher:
       lemma to match or a made tag.
       '''
       pattern = []
-      for key in data:
+      
+      stop_words = []
+      try: 
+        stop_words = get_stop_words(lang.lower())
+      except:
+        stop_words = []
         
-        # this code is because from babel some times comes compound frases, this split them
-        # but it didn't work
+      for key in data:
         
         data_key_split = []
         for i in data[key]:
-          data_key_split += i.split(' ')
+          split_result = i.split('_')
+          for word in split_result:
+            if(word in stop_words):
+              continue
+            data_key_split.append(word)
         
         data_key_split = list(set(data_key_split))
-        
-        stop_words = []
-        try: 
-          stop_words = get_stop_words(lang.lower())
-        except:
-          stop_words = []
         
         item = {
             "label": key,
