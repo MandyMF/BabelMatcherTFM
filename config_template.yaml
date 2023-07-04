@@ -9,7 +9,9 @@ id_list: [] # id_list
 # If tag_list is going to be used it has to have the same legth as id_list
 tag_list: [] # tag_list
 search_levels: 2 # search_levels
-result_file_path: "./result.json" 
-save_model_path: "./model_saved"
-load_model_path: "./model_saved"
-save_pattern_path: "./pattern.json"
+result_file_path: "./result.json" # path where to save the result
+save_model_path: "./model_saved" # path where to save the model when is build
+load_model_path: "./model_saved" # path from where to load the modal
+save_pattern_path: "./pattern.json" # path where to save the pattern which is going to be used to build the modal
+waiting_time_token_spent: 4000 # waiting time when you spent all your available tokens
+wait_when_token_are_spent: true # you can choose either to wait when you spend your tokens or to stop the execution of the program 

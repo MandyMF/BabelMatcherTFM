@@ -3,7 +3,7 @@ from utils import get_data_from_config_file, write_result_to_pc
 
 config_data = get_data_from_config_file()
 
-testBabelTermsMatcher = BabelTermsMatcher(config_data['babel_key'])
+testBabelTermsMatcher = BabelTermsMatcher(config_data['babel_key'], waitTime= config_data['waiting_time_on_error'], doNotWaitForServer= config_data['not_wait_when_token_are_spend'])
 testBabelTermsMatcher.load_data_from_padchest(config_data['data_to_process_path'])
 
 testBabelTermsMatcher.load_to_current_model(config_data['load_model_path'])
