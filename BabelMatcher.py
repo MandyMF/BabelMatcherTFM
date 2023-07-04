@@ -26,7 +26,7 @@ class BabelTermsMatcher:
     ]
 
 
-    def __init__ (self, key, waitTime = 360, doNotWaitForServer = False):
+    def __init__ (self, key, waitTime = 360, doNotWaitForServer = False, matchDistance = 1):
       '''  
       Initialization method where:
       - key should be the babelnet key.
@@ -45,6 +45,7 @@ class BabelTermsMatcher:
       self.latestOperationResult = None
       self.currentNER_Model = None
       self.data = None
+      self.matchDistance = matchDistance
     
     def load_data_from_padchest(self, data_path):
       '''
@@ -252,10 +253,16 @@ class BabelTermsMatcher:
           continue
         if(val['properties']['synsetID']['id'] in sourceSense_l):
           continue
-        item = {
-            'lemma': val['properties']['lemma']['lemma'],
-            'glosses': data['glosses']
-        }
+        if('glosses' in data):
+          item = {
+              'lemma': val['properties']['lemma']['lemma'],
+              'glosses': data['glosses']
+          }
+        else:
+          item = {
+              'lemma': val['properties']['lemma']['lemma'],
+              'glosses': ''
+          }
         sourceSense_l.append(val['properties']['synsetID']['id'])
         ret_list.append(item)
       self.latestOperation = "get_data_from_resp"
@@ -270,6 +277,7 @@ class BabelTermsMatcher:
       '''
       This function creates a query that returns all posible ids from a specific lemma or word,
       and uses the get_only_data_from_id to get the highest quality ones.
+      *IMPORTANT* this one includes glosses but it's slower and consume more queries than get_only_data_from_lemma
       '''
       ret_resp = []
       resp_data_list = []
@@ -301,6 +309,46 @@ class BabelTermsMatcher:
       self.latestOperation = "get_data_from_lemma"
       self.latestOperationResult = resp_data_list
       return resp_data_list
+    
+    # -----------------------------------------------
+    # get data from a lemma, return a list of ids
+    # -----------------------------------------------
+    
+    def get_only_data_from_lemma(self, lemma, lang):
+      '''
+      This function creates a query that returns all posible ids from a specific lemma or word.
+      *IMPORTANT* this one doesn't include glosses but it's faster and consume less queries than get_data_from_lemma
+      '''
+      ret_resp = []
+      resp_data_list = []
+      url = "https://babelnet.io/v8/getSenses?lemma={0}&searchLang={1}&key={2}".format(lemma, lang, self.key)
+      self.waiting = True
+      response = requests.request("POST", url)
+      while(response.status_code == 403):
+          if(self.doNotWaitForServer):
+            self.latestOperation = "get_data_from_lemma"
+            self.latestOperationResult = resp_data_list
+            self.waiting = False
+            return resp_data_list
+          print("Waiting, coins were spent !!!!!!")
+          time.sleep(self.waitTime)
+          
+          # Request again after the waiting time
+          response = requests.request("POST", url)
+      self.waiting = False
+      data = json.loads(response.text)
+      ret_resp.extend(data)
+      
+      for item in ret_resp:
+        resp_data = self.get_data_from_resp({'senses': [item]})
+        resp_data_list.append({
+            'id': item['properties']['synsetID']['id'],
+            'data': resp_data
+        }) 
+
+      self.latestOperation = "get_only_data_from_lemma"
+      self.latestOperationResult = resp_data_list
+      return resp_data_list
 
     def get_glosses_and_id_from_lemma(self, lemma, lang):
       ''' Returns lemma that would be the tag and the lists to disambiguate. '''
@@ -325,7 +373,7 @@ class BabelTermsMatcher:
       self.latestOperationResult = [lemma, ret_data]
       return [lemma, ret_data]
 
-    def create_pattern (self, data, lang, distance=1):
+    def create_pattern (self, data, lang):
       '''
       This function creates the pattern that is going to be use by the spacy model.
       This implementation uses FUZZY with one letter permutation, to match the data
@@ -360,7 +408,7 @@ class BabelTermsMatcher:
                {
                    "TEXT": 
                    {
-                        "FUZZY"+str(distance): 
+                        "FUZZY"+str(self.matchDistance): 
                       {
                         "IN": data_key_split,
                         "NOT_IN": list(punctuation) + stop_words
@@ -496,12 +544,12 @@ class BabelTermsMatcher:
       l_lemma_result = []
       
       for lemma in l_terms:
-        data = self.get_glosses_and_id_from_lemma(lemma, lang)
-        if not (len(data[1]) > 0 and 'id' in data[1][0] ):
+        data = self.get_only_data_from_lemma(lemma, lang)
+        if (len(data) == 0 and not 'id' in data):
           continue
         
-        l_id_result.append((data[1])[0]['id'])
-        l_lemma_result.append(data[0])
+        l_id_result.append(data[0]['id'])
+        l_lemma_result.append(lemma)
       return self.get_data_from_list_of_ids_and_tags(l_id_result, l_lemma_result, lang, levels)
 
     def get_data_from_list_of_lemmas_default_all (self, l_terms, lang, levels):
@@ -513,13 +561,13 @@ class BabelTermsMatcher:
       l_lemma_result = []
       
       for lemma in l_terms:
-        data = self.get_glosses_and_id_from_lemma(lemma, lang)
-        if (not (len(data[1]) > 0)):
+        data = self.get_only_data_from_lemma(lemma, lang)
+        if (len(data) == 0 and not 'id' in data):
           continue
-        for item in data[1]:
+        for item in data:
           if not ('id' in item and item['id']):
             continue
-          l_lemma_result.append(data[0])
+          l_lemma_result.append(lemma)
           l_id_result.append(item['id'])
       return self.get_data_from_list_of_ids_and_tags(l_id_result, l_lemma_result, lang, levels)
 

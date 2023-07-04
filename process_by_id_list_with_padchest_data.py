@@ -3,7 +3,12 @@ from utils import get_data_from_config_file, write_result_to_pc
 
 config_data = get_data_from_config_file()
 
-testBabelTermsMatcher = BabelTermsMatcher(config_data['babel_key'], waitTime= config_data['waiting_time_on_error'], doNotWaitForServer= config_data['not_wait_when_token_are_spend'])
+testBabelTermsMatcher = BabelTermsMatcher(
+                                          config_data['babel_key'], 
+                                          waitTime= config_data['waiting_time_on_error'], 
+                                          doNotWaitForServer= config_data['not_wait_when_token_are_spend'], 
+                                          matchDistance=config_data['match_levenshtein_distance']
+                                        )
 testBabelTermsMatcher.load_data_from_padchest(config_data['data_to_process_path'])
 
 data_from_babelnet = testBabelTermsMatcher.get_data_from_list_of_ids ( config_data['id_list'], config_data['lang'], config_data['search_levels'])
