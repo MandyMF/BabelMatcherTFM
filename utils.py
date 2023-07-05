@@ -2,10 +2,12 @@ import pandas as pd
 import json
 
 # import pyyaml module
-# install pip install pyyaml
+# pip install pyyaml
+# pip install bs4
 import yaml
 from yaml.loader import SafeLoader
 from json import loads, dumps
+from bs4 import BeautifulSoup
 
 def load_data_csv(data_path):
     return pd.read_csv(data_path, index_col=0)
@@ -58,4 +60,53 @@ def write_result_to_pc (data, result_path):
         return 1
     except:
         print("File to save does not exist !!!")
+        return 0
+
+def write_html (data, html_path):
+    output_html = add_to_html(data, html_path)
+    try:
+        
+        text_file = open(html_path, "w")
+        text_file.write(output_html)
+        text_file.close()
+        return 1
+    except:
+        print("Html file to save does not exist !!!")
+        return 0
+
+def create_html_file (html_path):
+    try:
+        text_file = open(html_path, "w")
+        text_file.write('')
+        text_file.close()
+        return 1
+    except:
+        print("Html file to save does not exist !!!")
+        return 0
+    
+def add_to_html (data, html_path):
+    try:
+        f = open (html_path, "r")
+        # Reading from file
+        read_data = f.read()
+        
+        output_doc = BeautifulSoup()
+        output_doc.append(output_doc.new_tag("html"))
+        output_doc.html.append(output_doc.new_tag("head"))
+        output_doc.head.extend(BeautifulSoup('<title> Results from query </title>', "html.parser"))
+        
+        output_doc.html.append(output_doc.new_tag("body"))
+        
+        if(data):
+            output_doc.body.extend(BeautifulSoup(data, "html.parser").body)
+        if(read_data):
+            output_doc.body.extend(BeautifulSoup(read_data, "html.parser").body)
+        
+        f.close()
+        
+        ret_html = '<!DOCTYPE html>' + output_doc.prettify()
+        
+        return ret_html
+    except:
+        print("Html file to save does not exist !!!")
         return 0

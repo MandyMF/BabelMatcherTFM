@@ -13,6 +13,8 @@ import requests
 import json
 
 from stop_words import get_stop_words
+import warnings
+warnings.filterwarnings("ignore", message=r"\[W006\]", category=UserWarning)
 
 
 class BabelTermsMatcher:
@@ -452,8 +454,6 @@ class BabelTermsMatcher:
       pattern.append(date_pattern2)
       pattern.append(email_pattern)
       
-      print(pattern)
-      
       return pattern
 
     @Language.component("ignore_prepositions")
@@ -516,6 +516,33 @@ class BabelTermsMatcher:
       }
       dspl.render(doc, style='ent', jupyter=True, options=opts)
       return opts
+    
+    def display_html_doc_by_labels(self, doc):
+      '''
+      This function uses the result from a model to display the results in color;
+      it returns an html code to show.
+      '''
+      colors_l = self.COLORS
+      color_count = 0
+      opt_colors = {}
+      opts_ents = []
+      labels = set()
+      for ent in doc.ents:
+        labels.add(ent.label_)
+      labels = list(labels)
+      for lab in labels:
+        if (color_count >= len(colors_l)): 
+          color_count = 0
+        opt_colors[lab] = colors_l[color_count]
+        opts_ents.append(lab)
+        color_count+=1
+      opts = {
+          "ents": opts_ents,
+          "colors": opt_colors,
+          "distance": 90 
+      }
+      html = dspl.render(doc, style='ent', page=True, options=opts)
+      return opts, html
 
     #this is only use when working with jupyterLab, jupyterNotebook or colab
     def apply_and_show_model (self, model_ner, text):
