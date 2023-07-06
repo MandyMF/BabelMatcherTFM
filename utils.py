@@ -64,8 +64,8 @@ def write_result_to_pc (data, result_path):
         print("File to save does not exist !!!")
         return 0
 
-def write_html (data, html_path):
-    output_html = add_to_html(data, html_path)
+def write_html (data, html_path, id):
+    output_html = add_to_html(data, html_path, id)
     try:
         
         text_file = open(html_path, "w")
@@ -86,7 +86,7 @@ def create_html_file (html_path):
         print("Html file to save does not exist !!!")
         return 0
     
-def add_to_html (data, html_path):
+def add_to_html (data, html_path, id):
     try:
         f = open (html_path, "r")
         # Reading from file
@@ -100,6 +100,7 @@ def add_to_html (data, html_path):
         output_doc.html.append(output_doc.new_tag("body"))
         
         if(data):
+            output_doc.body.extend(BeautifulSoup("<span> ImageID: {0}</span>".format(id), "html.parser"))
             output_doc.body.extend(BeautifulSoup(data, "html.parser").body)
         if(read_data):
             output_doc.body.extend(BeautifulSoup(read_data, "html.parser").body)

@@ -30,9 +30,11 @@ write_result_to_pc(results, config_data['result_file_path'])
 
 create_html_file(config_data['save_html_view'])
 
+count = 0
 for doc in raw_results:
   _, html = testBabelTermsMatcher.display_html_doc_by_labels(doc)
-  write_html(html, config_data['save_html_view'])
+  write_html(html, config_data['save_html_view'], testBabelTermsMatcher.ImageIds[count])
+  count += 1
 
 testBabelTermsMatcher.save_current_model(config_data['save_model_path'])
 

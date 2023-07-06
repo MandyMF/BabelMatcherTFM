@@ -56,6 +56,7 @@ class BabelTermsMatcher:
       self.latestOperationResult = None
       self.currentNER_Model = None
       self.data = None
+      self.ImageIds = None
       self.matchDistance = matchDistance
     
     def load_data_from_padchest(self, data_path):
@@ -65,6 +66,7 @@ class BabelTermsMatcher:
       '''
       raw_data = pd.read_csv(data_path, index_col=0)
       self.data = list(raw_data['Report'])
+      self.ImageIds = list(raw_data['ImageID'])
 
     def save_model(self, model, path):
       '''
@@ -421,7 +423,7 @@ class BabelTermsMatcher:
               continue
             data_key_split.append(after_word)
         data_key_split = list(set(data_key_split))
-        
+
         item = {
             "label": key,
             "pattern": [
