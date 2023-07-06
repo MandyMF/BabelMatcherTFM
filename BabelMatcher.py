@@ -14,7 +14,16 @@ import json
 
 from stop_words import get_stop_words
 import warnings
+from unidecode import unidecode
+
 warnings.filterwarnings("ignore", message=r"\[W006\]", category=UserWarning)
+
+def removePuntuation(str_to_replace):
+    punctuation_extended = list(punctuation) + ['\'', '\"', '\`', ' ']
+    for c in punctuation_extended:
+        str_to_replace = str_to_replace.replace(c, '')
+    return str_to_replace
+
 
 
 class BabelTermsMatcher:
@@ -341,8 +350,15 @@ class BabelTermsMatcher:
       data = json.loads(response.text)
       ret_resp.extend(data)
       
+      list_known_ids = []
+      
       for item in ret_resp:
         resp_data = self.get_data_from_resp({'senses': [item]})
+        
+        if(item['properties']['synsetID']['id'] in list_known_ids):
+          continue
+        else:
+          list_known_ids.append(item['properties']['synsetID']['id'])
         resp_data_list.append({
             'id': item['properties']['synsetID']['id'],
             'data': resp_data
@@ -400,8 +416,10 @@ class BabelTermsMatcher:
           for word in split_result:
             if(word in stop_words):
               continue
-            data_key_split.append(word)
-        
+            after_word = removePuntuation(unidecode(word))
+            if(len(after_word)<=2):
+              continue
+            data_key_split.append(after_word)
         data_key_split = list(set(data_key_split))
         
         item = {
