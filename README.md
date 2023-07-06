@@ -8,6 +8,7 @@ This project uses Babelnet data to create a model to process text, finding the d
 * ##### yaml
 * ##### json
 * ##### pandas
+* ##### unidecode
 * ##### stop_words
 
 
