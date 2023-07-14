@@ -1,6 +1,4 @@
 import spacy
-from spacy.tokens import Span
-from spacy.language import Language
 from spacy import displacy as dspl
 import time
 from threading import Thread
@@ -14,7 +12,7 @@ import json
 
 from stop_words import get_stop_words
 import warnings
-from unidecode import unidecode
+import unicodedata
 
 warnings.filterwarnings("ignore", message=r"\[W006\]", category=UserWarning)
 
@@ -24,6 +22,8 @@ def removePuntuation(str_to_replace):
         str_to_replace = str_to_replace.replace(c, '')
     return str_to_replace
 
+def normalize_text(text):
+    return unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8").lower()
 
 
 class BabelTermsMatcher:
@@ -403,7 +403,6 @@ class BabelTermsMatcher:
       lemma to match or a made tag.
       '''
       pattern = []
-      
       stop_words = []
       try: 
         stop_words = get_stop_words(lang.lower())
@@ -418,7 +417,7 @@ class BabelTermsMatcher:
           for word in split_result:
             if(word in stop_words):
               continue
-            after_word = removePuntuation(unidecode(word))
+            after_word = removePuntuation(normalize_text(word))
             if(len(after_word)<=2):
               continue
             data_key_split.append(after_word)
@@ -476,22 +475,6 @@ class BabelTermsMatcher:
       
       return pattern
 
-    @Language.component("ignore_prepositions")
-    def ignore_prepositions(doc):
-      '''
-      This function is an implementation that enables the model to ignore preposition, aux, blank spaces,
-      and puntuation if the model is a preloaded one.
-      This function is only left for debugging purposes, is not used.
-      '''
-      for i in range(len(doc)):
-          print("-------------------------------")
-          print(doc[i])
-          print("-------------------------------")
-          if doc[i].dep_ == "prep" or doc[i].dep_ == "aux" or doc[i].is_punct or doc[i].text == ' ':
-              # Ignore prepositions by setting a custom flag
-              #token.ignore = True
-              print("++++++++++++++++++")
-      return doc
 
 
     def create_NER_model (self, pattern, lang):
@@ -503,7 +486,6 @@ class BabelTermsMatcher:
         nlp = spacy.load("en_core_web_sm", disable=["ner"])
       else:
         nlp = spacy.blank("en")
-      #nlp.add_pipe("ignore_prepositions", name="ignore_prepositions", last=True)
       ruler = nlp.add_pipe("entity_ruler")
       
       ruler.add_patterns(pattern)
@@ -591,12 +573,12 @@ class BabelTermsMatcher:
       l_lemma_result = []
       
       for lemma in l_terms:
-        data = self.get_only_data_from_lemma(lemma, lang)
+        data = self.get_only_data_from_lemma(normalize_text(lemma), lang)
         if (len(data) == 0 and not 'id' in data):
           continue
         
         l_id_result.append(data[0]['id'])
-        l_lemma_result.append(lemma)
+        l_lemma_result.append(normalize_text(lemma))
       return self.get_data_from_list_of_ids_and_tags(l_id_result, l_lemma_result, lang, levels)
 
     def get_data_from_list_of_lemmas_default_all (self, l_terms, lang, levels):
@@ -608,13 +590,13 @@ class BabelTermsMatcher:
       l_lemma_result = []
       
       for lemma in l_terms:
-        data = self.get_only_data_from_lemma(lemma, lang)
+        data = self.get_only_data_from_lemma(normalize_text(lemma), lang)
         if (len(data) == 0 and not 'id' in data):
           continue
         for item in data:
           if not ('id' in item and item['id']):
             continue
-          l_lemma_result.append(lemma)
+          l_lemma_result.append(normalize_text(lemma))
           l_id_result.append(item['id'])
       return self.get_data_from_list_of_ids_and_tags(l_id_result, l_lemma_result, lang, levels)
 
