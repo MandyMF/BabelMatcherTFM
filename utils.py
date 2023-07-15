@@ -113,3 +113,32 @@ def add_to_html (data, html_path, id):
     except:
         print("Html file to save does not exist !!!")
         return 0
+    
+def create_html_var (data, read_data, id):
+    
+    output_doc = BeautifulSoup()
+    output_doc.append(output_doc.new_tag("html"))
+    output_doc.html.append(output_doc.new_tag("head"))
+    output_doc.head.extend(BeautifulSoup('<title> Results from query </title>', "html.parser"))
+    
+    output_doc.html.append(output_doc.new_tag("body"))
+    
+    if(data):
+        output_doc.body.extend(BeautifulSoup("<span> ImageID: {0}</span>".format(id), "html.parser"))
+        output_doc.body.extend(BeautifulSoup(data, "html.parser").body)
+    if(read_data):
+        output_doc.body.extend(BeautifulSoup(read_data, "html.parser").body)
+    
+    ret_html = '<!DOCTYPE html>' + output_doc.prettify()
+    
+    return ret_html
+
+def write_html_to_pc (data, html_path):
+    try: 
+        text_file = open(html_path, "w")
+        text_file.write(data)
+        text_file.close()
+        return 1
+    except:
+        print("Html file to save does not exist !!!")
+        return 0

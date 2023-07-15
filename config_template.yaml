@@ -2,11 +2,11 @@
 # Remove the _template from file name
 test_data_path: "test_data_path"
 data_to_process_path: "data_to_process_path"
-babel_key : "babel_key"
+babel_key : "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" #babel_key
 lang: "lang" # Example: EN, ES
 lemma_list: [] # lemma_list
 id_list: [] # id_list
-# If tag_list is going to be used it has to have the same legth as id_list
+# If tag_list is going to be used it has to have the same length as id_list
 tag_list: [] # tag_list
 search_levels: 2 # search_levels
 result_file_path: "./result.json" # path where to save the result
@@ -17,3 +17,4 @@ waiting_time_token_spent: 4000 # waiting time when you spent all your available 
 wait_when_token_are_spent: true # you can choose either to wait when you spend your tokens or to stop the execution of the program
 match_levenshtein_distance: 2 # distance that the program use to find match, it uses fuzzy logic with Levenshtein Distance
 save_html_view: "./result.html" # path of the file where the results can be visualize in html format
+dataset_is_lemmatized: True

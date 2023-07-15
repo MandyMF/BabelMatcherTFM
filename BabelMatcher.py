@@ -1,5 +1,6 @@
 import spacy
 from spacy import displacy as dspl
+from spacy.lang.en import EnglishDefaults
 import time
 from threading import Thread
 from pathlib import Path
@@ -17,7 +18,7 @@ import unicodedata
 warnings.filterwarnings("ignore", message=r"\[W006\]", category=UserWarning)
 
 def removePuntuation(str_to_replace):
-    punctuation_extended = list(punctuation) + ['\'', '\"', '\`', ' ']
+    punctuation_extended = list(punctuation) + ['\'', '\"', '\`']
     for c in punctuation_extended:
         str_to_replace = str_to_replace.replace(c, '')
     return str_to_replace
@@ -37,7 +38,7 @@ class BabelTermsMatcher:
     ]
 
 
-    def __init__ (self, key, waitTime = 360, doNotWaitForServer = False, matchDistance = 1):
+    def __init__ (self, key, waitTime = 360, doNotWaitForServer = False, matchDistance = 1, is_lemmatized = True):
       '''  
       Initialization method where:
       - key should be the babelnet key.
@@ -58,6 +59,7 @@ class BabelTermsMatcher:
       self.data = None
       self.ImageIds = None
       self.matchDistance = matchDistance
+      self.is_lemmatized = is_lemmatized
     
     def load_data_from_padchest(self, data_path):
       '''
@@ -402,16 +404,19 @@ class BabelTermsMatcher:
       keys that describes the list of terms or lemmas to match, this can be the main
       lemma to match or a made tag.
       '''
-      pattern = []
+      
       stop_words = []
       try: 
-        stop_words = get_stop_words(lang.lower())
+        stop_words = set(get_stop_words(lang.lower()))
       except:
-        stop_words = []
+        stop_words = set([])
+    
+      pattern = []
         
       for key in data:
         
-        data_key_split = []
+        data_key_split = set()
+        data_split_l = []
         for i in data[key]:
           split_result = i.split('_')
           for word in split_result:
@@ -420,25 +425,45 @@ class BabelTermsMatcher:
             after_word = removePuntuation(normalize_text(word))
             if(len(after_word)<=2):
               continue
-            data_key_split.append(after_word)
-        data_key_split = list(set(data_key_split))
-
-        item = {
+            data_split_l.append(after_word)
+          
+          replace_result = removePuntuation(normalize_text(i.replace('_', ' ')))
+          data_key_split.add(replace_result)
+        
+        data_split_l = list(set(data_split_l))
+        data_key_split = list(data_key_split)
+        
+        # This is the old way to create patterns, the IN operator only takes words, not frases.
+        
+        for element in data_key_split:
+          if(len(element) == 0):
+            continue
+          item1 = {
+              "label": key,
+              "pattern": element,
+              "type": "fuzzy"+str(self.matchDistance)
+          }
+          
+          pattern.append(item1)
+        
+        item2 = {
             "label": key,
             "pattern": [
                {
                    "TEXT": 
                    {
-                        "FUZZY"+str(self.matchDistance): 
+                      "FUZZY"+str(self.matchDistance): 
                       {
-                        "IN": data_key_split,
-                        "NOT_IN": list(punctuation) + stop_words
+                        "IN": data_split_l,
+                        "NOT_IN": list(punctuation) + list(stop_words)
                       }
                    }
                } 
             ]
         }
-        pattern.append(item)
+        if(self.is_lemmatized):
+          pattern.append(item2)
+      
       phone_pattern = {"label": "PHONE_NUMBER", "pattern": [
           {'ORTH': '('}, {'SHAPE': 'd'},
           {'ORTH': ')'},
@@ -481,11 +506,19 @@ class BabelTermsMatcher:
       '''
       This function creates a model from a specific pattern.
       The pattern has to have the spacy pattern structure structure.
-      '''
+      ''' 
+      stop_words = []
+      try: 
+        stop_words = set(get_stop_words(lang.lower()))
+      except:
+        stop_words = set([])
+
       if (lang == 'EN'):
         nlp = spacy.load("en_core_web_sm", disable=["ner"])
       else:
+        EnglishDefaults.stop_words = stop_words
         nlp = spacy.blank("en")
+
       ruler = nlp.add_pipe("entity_ruler")
       
       ruler.add_patterns(pattern)

@@ -41,6 +41,14 @@ Process the text with a list of ids and the first lemma found with the id is the
 
 Process the text using a previously saved model.
 
+* ##### save_html_view
+
+Saved results in html format path.
+
+* ##### dataset_is_lemmatized
+
+Whether the dataset is lemmatized previously or not.
+
 ---
 
 In the project there is a **config_template.yaml** file that contains the structure and variables used by the above programs. This file needs to be renamed to **config.yaml** so the project works. The **config_template.yaml** is descriptive of the type values of the variables it should contain.
