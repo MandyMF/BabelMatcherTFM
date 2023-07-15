@@ -265,6 +265,8 @@ class BabelTermsMatcher:
       for val in data['senses']:
         # POTENTIAL_NEAR_SYNONYM_OR_WORSE
         if(val['properties']['lemma']['type'] != 'HIGH_QUALITY'):
+          #if(val['properties']['lemma']['type'] != 'POTENTIAL_NEAR_SYNONYM_OR_WORSE'):
+          #  continue
           continue
         if(val['properties']['synsetID']['id'] in sourceSense_l):
           continue
