@@ -24,7 +24,7 @@ def removePuntuation(str_to_replace):
     return str_to_replace
 
 def normalize_text(text):
-    return unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8").lower()
+    return unicodedata.normalize('NFKD', text).encode('ASCII', 'ignore').decode('utf-8') 
 
 
 class BabelTermsMatcher:
@@ -32,9 +32,9 @@ class BabelTermsMatcher:
     COLORS = [
         "pink",
         "blue",
-        "white",
         "gray",
-        "red"
+        "red",
+        "green"
     ]
 
 
@@ -47,7 +47,8 @@ class BabelTermsMatcher:
       - doNotWaitForServer if this parameter is True then after a failed request to babelnet,
         istead of waiting for more coins or wait to retry, it will just returns an empty array,
         this is use in case you do several continuos request and you run out of coins, so the
-        program can finish its run with the data already collected.  
+        program can finish its run with the data already collected.
+      - is_lemmatized if the parameter is True, it activates an extra step on the pattern building process 
       '''
       self.key = key
       self.waitTime = waitTime
@@ -120,7 +121,7 @@ class BabelTermsMatcher:
             self.latestOperationResult = return_data
             self.waiting = False
             return return_data
-          print("Waiting, coins were spent !!!!!!")
+          print("Waiting, coins were spent or blocked !!!!!!")
           time.sleep(self.waitTime)
           # Request again after the waiting time
           response = requests.request("POST", url)
@@ -184,7 +185,7 @@ class BabelTermsMatcher:
             self.latestOperationResult = ret_dic
             self.waiting = False
             return ret_dic
-          print("Waiting, coins were spent !!!!!!")
+          print("Waiting, coins were spent or blocked !!!!!!")
           time.sleep(self.waitTime)
           
           # Request again after the waiting time
@@ -242,7 +243,7 @@ class BabelTermsMatcher:
             self.latestOperationResult = ret_dic
             self.waiting = False
             return ret_dic
-          print("Waiting, coins were spent !!!!!!")
+          print("Waiting, coins were spent or blocked !!!!!!")
           time.sleep(self.waitTime)
           
           # Request again after the waiting time
@@ -307,7 +308,7 @@ class BabelTermsMatcher:
             self.latestOperationResult = resp_data_list
             self.waiting = False
             return resp_data_list
-          print("Waiting, coins were spent !!!!!!")
+          print("Waiting, coins were spent or blocked !!!!!!")
           time.sleep(self.waitTime)
           
           # Request again after the waiting time
@@ -347,7 +348,7 @@ class BabelTermsMatcher:
             self.latestOperationResult = resp_data_list
             self.waiting = False
             return resp_data_list
-          print("Waiting, coins were spent !!!!!!")
+          print("Waiting, coins were spent or blocked !!!!!!")
           time.sleep(self.waitTime)
           
           # Request again after the waiting time
@@ -441,7 +442,7 @@ class BabelTermsMatcher:
           if(len(element) == 0):
             continue
           item1 = {
-              "label": key,
+              "label": key.replace(' ', '_'),
               "pattern": element,
               "type": "fuzzy"+str(self.matchDistance)
           }
@@ -449,7 +450,7 @@ class BabelTermsMatcher:
           pattern.append(item1)
         
         item2 = {
-            "label": key,
+            "label": key.replace(' ', '_'),
             "pattern": [
                {
                    "TEXT": 

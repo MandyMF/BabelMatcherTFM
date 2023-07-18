@@ -7,3 +7,5 @@ result.json
 main.py
 pattern.json
 result.html
+get_frases.py
+pattern_filter.txt

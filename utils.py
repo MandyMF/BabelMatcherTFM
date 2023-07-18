@@ -23,7 +23,7 @@ def load_data_json(data_path):
     return data
 
 def get_data_from_config_file(config_path = "./config.yaml"):
-    with open(config_path) as f:
+    with open(config_path, encoding='utf8') as f:
         data = yaml.load(f, Loader=SafeLoader)       
         return data
 
