@@ -1,6 +1,5 @@
 ---
 # Remove the _template from file name
-test_data_path: "test_data_path"
 data_to_process_path: "data_to_process_path"
 babel_key : "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" #babel_key
 lang: "lang" # Example: EN, ES
