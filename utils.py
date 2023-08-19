@@ -56,7 +56,7 @@ def load_data(data_path):
 def write_result_to_pc (data, result_path):
     try:
         jsonString = json.dumps(data, indent=4, sort_keys=True)
-        text_file = open(result_path, "w")
+        text_file = open(result_path, "w", encoding="utf-8")
         n = text_file.write(jsonString)
         text_file.close()
         return 1
@@ -68,7 +68,7 @@ def write_html (data, html_path, id):
     output_html = add_to_html(data, html_path, id)
     try:
         
-        text_file = open(html_path, "w")
+        text_file = open(html_path, "w", encoding="utf-8")
         text_file.write(output_html)
         text_file.close()
         return 1
@@ -121,10 +121,10 @@ def create_html_var (data, read_data, id):
     output_doc.html.append(output_doc.new_tag("head"))
     output_doc.head.extend(BeautifulSoup('<title> Results from query </title>', "html.parser"))
     
-    output_doc.html.append(output_doc.new_tag("body"))
+    output_doc.html.append(output_doc.new_tag("body", style="padding: 24px 16px 24px 16px;"))
     
     if(data):
-        output_doc.body.extend(BeautifulSoup("<span> ImageID: {0}</span>".format(id), "html.parser"))
+        output_doc.body.extend(BeautifulSoup("<span style='font-style: italic; font-weight: 600px; font-size: 18px;'> &#10148; &nbsp; &nbsp; ImageID: {0}</span>".format(id), "html.parser"))
         output_doc.body.extend(BeautifulSoup(data, "html.parser").body)
     if(read_data):
         output_doc.body.extend(BeautifulSoup(read_data, "html.parser").body)
@@ -135,10 +135,17 @@ def create_html_var (data, read_data, id):
 
 def write_html_to_pc (data, html_path):
     try: 
-        text_file = open(html_path, "w")
+        text_file = open(html_path, "w", encoding="utf-8")
         text_file.write(data)
         text_file.close()
         return 1
-    except:
+    except Exception as error:
+        print(error)
         print("Html file to save does not exist !!!")
         return 0
+
+def get_execution_status(instance, thread):
+    if (thread.is_alive()):
+        return(instance.babelTermsMatcher.waiting)
+    else: 
+        return 2

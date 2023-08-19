@@ -3,17 +3,28 @@
 data_to_process_path: "data_to_process_path"
 babel_key : "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" #babel_key
 lang: "lang" # Example: EN, ES
-lemma_list: [] # lemma_list
-id_list: [] # id_list
-# If tag_list is going to be used it has to have the same length as id_list
-tag_list: [] # tag_list
-search_levels: 2 # search_levels
+
+
 result_file_path: "./result.json" # path where to save the result
 save_model_path: "./model_saved" # path where to save the model when is build
 load_model_path: "./model_saved" # path from where to load the modal
 save_pattern_path: "./pattern.json" # path where to save the pattern which is going to be used to build the modal
-waiting_time_token_spent: 4000 # waiting time when you spent all your available tokens
-wait_when_token_are_spent: true # you can choose either to wait when you spend your tokens or to stop the execution of the program
+
+
+search_levels: 2 # search_levels
 match_levenshtein_distance: 2 # distance that the program use to find match, it uses fuzzy logic with Levenshtein Distance
+
+
+waiting_time_token_spent: 4000 # waiting time when you spent all your available tokens
+not_wait_when_token_are_spend: false # you can choose either to wait when you spend your tokens or to stop the execution of the program
+
+
+lemma_list: [] # lemma_list
+id_list: [] # id_list
+# If tag_list is going to be used it has to have the same length as id_list
+tag_list: [] # tag_list
+
+
+waiting_time_token_spent: 4000 # waiting time when you spent all your available tokens
 save_html_view: "./result.html" # path of the file where the results can be visualize in html format
 dataset_is_lemmatized: True

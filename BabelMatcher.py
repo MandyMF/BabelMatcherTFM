@@ -113,7 +113,7 @@ class BabelTermsMatcher:
       
       data = []
       url = "https://babelnet.io/v8/getOutgoingEdges?id={0}&targetLang={1}&key={2}".format(id, lang, self.key)
-      self.waiting = True
+      
       response = requests.request("POST", url)
       while(response.status_code == 403):
           if(self.doNotWaitForServer):
@@ -121,6 +121,7 @@ class BabelTermsMatcher:
             self.latestOperationResult = return_data
             self.waiting = False
             return return_data
+          self.waiting = True
           print("Waiting, coins were spent or blocked !!!!!!")
           time.sleep(self.waitTime)
           # Request again after the waiting time
@@ -176,7 +177,7 @@ class BabelTermsMatcher:
       ret_dic = {}
       ret_dic[tag] = set()
       url = "https://babelnet.io/v8/getSynset?id={0}&targetLang={1}&key={2}".format(id, lang, self.key)
-      self.waiting = True
+      
       response = requests.request("POST", url)
       while(response.status_code == 403):
           if(self.doNotWaitForServer):
@@ -185,6 +186,7 @@ class BabelTermsMatcher:
             self.latestOperationResult = ret_dic
             self.waiting = False
             return ret_dic
+          self.waiting = True
           print("Waiting, coins were spent or blocked !!!!!!")
           time.sleep(self.waitTime)
           
@@ -235,7 +237,7 @@ class BabelTermsMatcher:
       '''
       ret_dic = []
       url = "https://babelnet.io/v8/getSynset?id={0}&targetLang={1}&key={2}".format(id, lang, self.key)
-      self.waiting = True
+      
       response = requests.request("POST", url)
       while(response.status_code == 403):
           if(self.doNotWaitForServer):
@@ -243,6 +245,7 @@ class BabelTermsMatcher:
             self.latestOperationResult = ret_dic
             self.waiting = False
             return ret_dic
+          self.waiting = True
           print("Waiting, coins were spent or blocked !!!!!!")
           time.sleep(self.waitTime)
           
@@ -300,7 +303,7 @@ class BabelTermsMatcher:
       ret_resp = []
       resp_data_list = []
       url = "https://babelnet.io/v8/getSynsetIds?lemma={0}&searchLang={1}&key={2}".format(lemma, lang, self.key)
-      self.waiting = True
+      
       response = requests.request("POST", url)
       while(response.status_code == 403):
           if(self.doNotWaitForServer):
@@ -308,6 +311,7 @@ class BabelTermsMatcher:
             self.latestOperationResult = resp_data_list
             self.waiting = False
             return resp_data_list
+          self.waiting = True
           print("Waiting, coins were spent or blocked !!!!!!")
           time.sleep(self.waitTime)
           
@@ -340,7 +344,7 @@ class BabelTermsMatcher:
       ret_resp = []
       resp_data_list = []
       url = "https://babelnet.io/v8/getSenses?lemma={0}&searchLang={1}&key={2}".format(lemma, lang, self.key)
-      self.waiting = True
+      
       response = requests.request("POST", url)
       while(response.status_code == 403):
           if(self.doNotWaitForServer):
@@ -348,6 +352,7 @@ class BabelTermsMatcher:
             self.latestOperationResult = resp_data_list
             self.waiting = False
             return resp_data_list
+          self.waiting = True
           print("Waiting, coins were spent or blocked !!!!!!")
           time.sleep(self.waitTime)
           

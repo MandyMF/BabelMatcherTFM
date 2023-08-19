@@ -1,61 +1,65 @@
 from BabelMatcher import BabelTermsMatcher
-from utils import get_data_from_config_file, write_result_to_pc, create_html_file, create_html_var, write_html_to_pc, write_html
+from utils import get_data_from_config_file, write_result_to_pc, create_html_file, create_html_var, write_html_to_pc
 
-def exec():
-  config_data = get_data_from_config_file()
-
-  testBabelTermsMatcher = BabelTermsMatcher(
-                                            config_data['babel_key'], 
-                                            waitTime= config_data['waiting_time_on_error'], 
-                                            doNotWaitForServer= config_data['not_wait_when_token_are_spend'], 
-                                            matchDistance=config_data['match_levenshtein_distance'],
-                                            is_lemmatized= config_data['dataset_is_lemmatized']
+class ExecClass:
+  
+  def __init__ (self):
+    self.config_data = get_data_from_config_file()
+    self.babelTermsMatcher = BabelTermsMatcher(
+                                            self.config_data['babel_key'], 
+                                            waitTime= self.config_data['waiting_time_on_error'], 
+                                            doNotWaitForServer= self.config_data['not_wait_when_token_are_spend'], 
+                                            matchDistance= self.config_data['match_levenshtein_distance'],
+                                            is_lemmatized=  self.config_data['dataset_is_lemmatized']
                                           )
-  testBabelTermsMatcher.load_data_from_padchest(config_data['data_to_process_path'])
 
-  data_from_babelnet = testBabelTermsMatcher.get_data_from_list_of_ids_and_tags ( config_data['id_list'], config_data['tag_list'], config_data['lang'], config_data['search_levels'])
+  def exec(self):
+    self.babelTermsMatcher.load_data_from_padchest(self.config_data['data_to_process_path'])
 
-  write_result_to_pc(data_from_babelnet, config_data['save_pattern_path'])
+    data_from_babelnet = self.babelTermsMatcher.get_data_from_list_of_ids_and_tags ( self.config_data['id_list'], self.config_data['tag_list'], self.config_data['lang'], self.config_data['search_levels'])
 
-  model, ruler = testBabelTermsMatcher.create_NER_model(data_from_babelnet, config_data['lang'])
+    write_result_to_pc(data_from_babelnet, self.config_data['save_pattern_path'])
 
-  testBabelTermsMatcher.save_current_model(config_data['save_model_path'])
+    model, ruler = self.babelTermsMatcher.create_NER_model(data_from_babelnet, self.config_data['lang'])
 
-  results = []
-  raw_results = []
+    self.babelTermsMatcher.save_current_model(self.config_data['save_model_path'])
 
-  print("Model Created and Saved")
-  print("Now Processing Data")
+    results = []
+    raw_results = []
 
-  for i in range(len(testBabelTermsMatcher.data)):
-    if(type(testBabelTermsMatcher.data[i]) != str):
-      continue
-    
-    doc = testBabelTermsMatcher.apply_model(model, testBabelTermsMatcher.data[i])
-    results.append({ "id": testBabelTermsMatcher.ImageIds[i] ,"tags":[{"entity": str(ent.text) , "tag": str(ent.label_)} for ent in doc.ents]})
-    raw_results.append(doc)
+    print("Model Created and Saved")
+    print("Now Processing Data")
 
-  print("Saving Results")
-  write_result_to_pc(results, config_data['result_file_path'])
+    for i in range(len(self.babelTermsMatcher.data)):
+      if(type(self.babelTermsMatcher.data[i]) != str):
+        continue
+      
+      doc = self.babelTermsMatcher.apply_model(model, self.babelTermsMatcher.data[i])
+      results.append({ "id": self.babelTermsMatcher.ImageIds[i] ,"tags":[{"entity": str(ent.text) , "tag": str(ent.label_)} for ent in doc.ents]})
+      raw_results.append(doc)
 
-  create_html_file(config_data['save_html_view'])
+    print("Saving Results")
+    write_result_to_pc(results, self.config_data['result_file_path'])
 
-  batch_size = 100
-  count = 0
-  html_result = ''
+    create_html_file(self.config_data['save_html_view'])
 
-  print("Creating Html Data from Results")
+    batch_size = 100
+    count = 0
+    html_result = ''
 
-  for doc in raw_results:
-    _, html = testBabelTermsMatcher.display_html_doc_by_labels(doc)
-    html_result = create_html_var(html, html_result, results[count]["id"])
-    count += 1
-    if(count % batch_size == 0):
-      write_html_to_pc(html_result, config_data['save_html_view'])
+    print("Creating Html Data from Results")
 
-  write_html_to_pc(html_result, config_data['save_html_view'])
+    for doc in raw_results:
+      _, html = self.babelTermsMatcher.display_html_doc_by_labels(doc)
+      html_result = create_html_var(html, html_result, results[count]["id"])
+      count += 1
+      if(count % batch_size == 0):
+        write_html_to_pc(html_result, self.config_data['save_html_view'])
 
-  print("Job Done")
+    write_html_to_pc(html_result, self.config_data['save_html_view'])
+
+    print("Job Done")
 
 if __name__ == "__main__":
-  exec ()
+  exec_inst = ExecClass()
+  exec_inst.exec()
