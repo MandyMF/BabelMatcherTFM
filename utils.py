@@ -23,9 +23,12 @@ def load_data_json(data_path):
     return data
 
 def get_data_from_config_file(config_path = "./config.yaml"):
-    with open(config_path, encoding='utf8') as f:
-        data = yaml.load(f, Loader=SafeLoader)       
-        return data
+    try:
+        with open(config_path, encoding='utf8') as f:
+            data = yaml.load(f, Loader=SafeLoader)       
+            return data
+    except:
+        return 0
 
 def config_exist_or_init(config_path = "./config.yaml", template_path= "./config_template.yaml"):
     open(config_path, 'a+').close()
