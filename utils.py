@@ -149,3 +149,14 @@ def get_execution_status(instance, thread):
         return(instance.babelTermsMatcher.waiting)
     else: 
         return 2
+    
+def write_dic_to_yaml(data, config_path = "./config.yaml"):
+    try:
+        text_file = open(config_path, "w", encoding="utf-8")     
+        yaml.dump(data, text_file)
+        text_file.close()
+        return 1
+    except Exception as error:
+        print(error)
+        print("Error writing to file!!!!")
+        return 0
