@@ -4,6 +4,7 @@ from .utils import get_data_from_config_file, write_result_to_pc, create_html_fi
 class ExecClass:
   
   def __init__ (self):
+    self.finish = False
     self.config_data = get_data_from_config_file()
     self.babelTermsMatcher = BabelTermsMatcher(
                                             self.config_data['babel_key'], 
@@ -58,6 +59,7 @@ class ExecClass:
 
     write_html_to_pc(html_result, self.config_data['save_html_view'])
 
+    self.finish = True
     print("Job Done")
 
 if __name__ == "__main__":
