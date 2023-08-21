@@ -1,5 +1,5 @@
-from BabelMatcher import BabelTermsMatcher
-from utils import get_data_from_config_file, write_result_to_pc, create_html_file, create_html_var, write_html_to_pc
+from .BabelMatcher import BabelTermsMatcher
+from .utils import get_data_from_config_file, write_result_to_pc, create_html_file, create_html_var, write_html_to_pc
 
 class ExecClass:
   
