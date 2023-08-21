@@ -1,5 +1,11 @@
-from BabelMatcher import BabelTermsMatcher
-from utils import get_data_from_config_file, write_result_to_pc, create_html_file, create_html_var, write_html_to_pc
+if __package__ is None or __package__ == '':
+    # uses current directory visibility
+    from BabelMatcher import BabelTermsMatcher
+    from utils import get_data_from_config_file, write_result_to_pc, create_html_file, create_html_var, write_html_to_pc
+else:
+    # uses current package visibility
+    from .BabelMatcher import BabelTermsMatcher
+    from .utils import get_data_from_config_file, write_result_to_pc, create_html_file, create_html_var, write_html_to_pc
 
 class ExecClass:
   
