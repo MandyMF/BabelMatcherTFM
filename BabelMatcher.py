@@ -11,7 +11,13 @@ from string import punctuation
 import requests
 import json
 
-from stop_words import get_stop_words
+if __package__ is None or __package__ == '':
+    # uses current directory visibility
+  from stopwords import get_stop_words
+else:
+    # uses current package visibility
+  from .stopwords import get_stop_words
+
 import warnings
 import unicodedata
 
