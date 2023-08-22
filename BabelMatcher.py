@@ -527,11 +527,8 @@ class BabelTermsMatcher:
       except:
         stop_words = set([])
 
-      if (lang == 'EN'):
-        nlp = spacy.load("en_core_web_sm", disable=["ner"])
-      else:
-        EnglishDefaults.stop_words = stop_words
-        nlp = spacy.blank("en")
+      EnglishDefaults.stop_words = stop_words
+      nlp = spacy.blank("en")
 
       ruler = nlp.add_pipe("entity_ruler")
       
