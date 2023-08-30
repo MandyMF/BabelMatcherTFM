@@ -9,7 +9,8 @@ else:
 
 class ExecClass:
   
-  def __init__ (self):
+  def __init__ (self, show_only_detected=False):
+    self.show_only_detected = show_only_detected
     self.finish = False
     self.config_data = get_data_from_config_file()
     self.babelTermsMatcher = BabelTermsMatcher(
@@ -57,6 +58,10 @@ class ExecClass:
     print("Creating Html Data from Results")
 
     for doc in raw_results:
+      if(self.show_only_detected and len(doc.ents) == 0):
+        count += 1
+        continue
+    
       _, html = self.babelTermsMatcher.display_html_doc_by_labels(doc)
       html_result = create_html_var(html, html_result, results[count]["id"])
       count += 1
