@@ -1,11 +1,5 @@
 import pandas as pd
 import json
-
-# import pyyaml module
-# pip install pyyaml
-# pip install bs4
-# pip install unidecode
-
 import yaml
 from yaml.loader import SafeLoader
 from json import loads, dumps
