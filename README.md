@@ -14,7 +14,7 @@ This project uses Babelnet data to create a model to process text, finding the d
 ## Configuration
 
 The BabelMatcher can run out of babel tokens when processing, because Babelnet has a limited number of available tokens to use in a 24 hour span.
-When this happens a: **Waiting, coins were spent !!!!!!**, will appear in the console.
+When this happens a: **Waiting, coins were spent or blocked !!!!!!**, will appear in the console. This error can also occur if the BabelNet key doesn't exist or is blocked.
 
 The data use as a test is a csv with the structure if the Padchest data file. It should be a csv with and unnamed column that contains the index and a **Report** column that contains the text data to process. 
 
