@@ -116,6 +116,7 @@ def create_html_var (data, read_data, id):
     output_doc = BeautifulSoup()
     output_doc.append(output_doc.new_tag("html"))
     output_doc.html.append(output_doc.new_tag("head"))
+    output_doc.head.extend(BeautifulSoup('<meta charset="utf-8">', "html.parser"))
     output_doc.head.extend(BeautifulSoup('<title> Results from query </title>', "html.parser"))
     
     output_doc.html.append(output_doc.new_tag("body", style="padding: 24px 16px 24px 16px;"))
