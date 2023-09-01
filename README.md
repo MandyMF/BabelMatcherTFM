@@ -1,6 +1,10 @@
 # Getting Started with BabelMatcher
 
-This project uses Babelnet data to create a model to process text, finding the data related to a lemma, or babelnet id.
+This project uses Babelnet data to create a model to process text, finding the data related to a lemma, or babelnet id. Github repository:
+
+``` bash
+https://github.com/MandyMF/BabelMatcherTFM.git
+```
 
 ## Dependencies Needed:
 
